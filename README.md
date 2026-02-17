@@ -1,0 +1,1 @@
+An ERP application, that is meant to handle business related tasks. The project is currently in the first phase, with tasks such as leave and a ticketing system being built. The next phase will include functionality such as file and project management.
