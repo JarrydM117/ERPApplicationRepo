@@ -17,18 +17,7 @@ namespace ERPApplication.InfrastructureLayer.Repository
             _context = context;
         }
 
-        public async Task<bool> UpdateLeaveAmmount(int employeeId, int leaveTypeId, int leaveAmmount)
-        {
-            var leave = await _context.Set<EmployeeLeave>().SingleAsync(l=>l.EmployeeId==employeeId && l.LeaveTypeId == leaveTypeId);
-            leave.SubtractAnnualLeave(leaveAmmount);
-            var validate = await _context.SaveChangesAsync();
-            return validate == 1;
-        }
-
-        //public async Task<List<EmployeeLeave>> GetLeaveForEmployee()
-        //{
-
-        //}
+     
 
 
     }

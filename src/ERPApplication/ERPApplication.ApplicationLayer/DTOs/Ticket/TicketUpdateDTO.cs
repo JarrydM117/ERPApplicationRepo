@@ -1,0 +1,10 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ERPApplication.ApplicationLayer.DTOs.Ticket
+{
+    public record TicketUpdateDTO(int Id, int TicketStatusId, int SupportTypeId);
+}

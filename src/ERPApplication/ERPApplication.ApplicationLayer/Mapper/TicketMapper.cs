@@ -50,5 +50,11 @@ namespace ERPApplication.ApplicationLayer.Mapper
             }
             return ticketsToRet;
         }
+
+        public TicketDTO TicketToTicketDTO(Ticket ticket)
+        {
+            return new TicketDTO(ticket.Title, ticket.Body, ticket.DateIssued, ticket.EmployeeId, ticket.SupportTypeId, _allocatedMapper.AllocatedToAllocatedDTO(ticket.AllocatedTickets));
+        }
+
     }
 }

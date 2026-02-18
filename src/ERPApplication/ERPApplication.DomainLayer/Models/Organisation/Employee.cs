@@ -1,5 +1,6 @@
 ﻿using ERPApplication.DomainLayer.Models;
 using ERPApplication.DomainLayer.Models.Tickets;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace ERPApplication.DomainLayer.Models.Organisation
         public EmployeeStatus EmployeeStatus { get; set; }
         public int EmployeeStatusId { get; private set; }
         public List<Role> Roles { get;  set; }
+
         public Employee(int id, string firstName, string lastName, string emailAddress, string password, int? unitId, int employeeStatusId, string jobTitle,int? reportingManagerId=null) : base(id)
         {
             FirstName = firstName;
@@ -39,6 +41,13 @@ namespace ERPApplication.DomainLayer.Models.Organisation
             EmailAddress = emailAddress;
         }
 
+        public bool VerifyCredentials(string password)
+        {
+            PasswordHasher pw = new PasswordHasher();
+            var result = pw.VerifyHashedPassword(Password, password);
+            return result == PasswordVerificationResult.Success;
+        }
+
         private string GenerateRandomPassword()
         {
             Random rand = new Random();
@@ -48,6 +57,8 @@ namespace ERPApplication.DomainLayer.Models.Organisation
             {
                 password += charArr[rand.Next(0, charArr.Length)];
             }
+            PasswordHasher pw = new PasswordHasher();
+            password = pw.HashPassword(password);
             return password;
         }
 

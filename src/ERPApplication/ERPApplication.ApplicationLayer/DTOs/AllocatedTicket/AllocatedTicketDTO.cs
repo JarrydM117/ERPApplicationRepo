@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace ERPApplication.ApplicationLayer.DTOs.AllocatedTicket
 {
-    public record AllocatedTicketAssignmentDTO(int TicketId, int EmployeeId);
+        public record AllocatedTicketDTO(int employeeId, DateTime DateAllocated, DateTime? DateClosed); 
 }

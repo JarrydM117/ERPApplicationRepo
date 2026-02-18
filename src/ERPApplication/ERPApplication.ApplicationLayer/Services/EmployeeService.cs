@@ -23,19 +23,17 @@ namespace ERPApplication.ApplicationLayer.Services
             _roleMapper = roleMapper;
         }
 
-        public async Task<int> AuthenticateEmployee(EmployeeCredentialsDTO credentials)
+        public async Task<EmployeeAuthenticatedDTO?> AuthenticateEmployee(EmployeeCredentialsDTO credentials)
         {
             Employee employee = _employeeMapper.CredentialsToEmployee(credentials);
-            var employeeId = await _employeeRepository.AuthenticateEmployee(employee);     
-            return employeeId;
+            var employeeCred = await _employeeRepository.AuthenticateEmployee(employee);
+            if(employeeCred.VerifyCredentials(credentials.Password))
+            {
+                return _employeeMapper.EmployeeToAuthenticated(employee);
+            }
+            return null;
         }
 
-
-        public async Task<EmployeeAuthenticatedDTO> GetAuthentciatedEmployee(int id)
-        {
-            Employee employee = await GetEmployeeWithId(id);
-            return _employeeMapper.EmployeeToAuthenticated(employee, _roleMapper.RolesToRoleEmployee(employee.Roles));
-        }
 
         public async Task<bool> RegisterEmployee(EmployeeRegisterationDTO employeeRegisteration)
         {
@@ -45,6 +43,11 @@ namespace ERPApplication.ApplicationLayer.Services
             var validation = await _employeeRepository.RegisterEmployee(employee);
             return validation;
         }
+
+        public async Task<List<EmployeePresentationDTO>> GetAllEmployees()
+        {
+            return _employeeMapper.EmployeeToPresentation(await _employeeRepository.GetAll());
+        }
         
 
         private async Task<Employee> GetEmployeeWithId(int id)
@@ -52,6 +55,7 @@ namespace ERPApplication.ApplicationLayer.Services
             Employee? employee = await _employeeRepository.GetEmployee(id);
             return employee;
         }
+
         private async Task<string> BuildEmailAddress(string firstName, string lastName, string domain)
         {
             bool flag = false;

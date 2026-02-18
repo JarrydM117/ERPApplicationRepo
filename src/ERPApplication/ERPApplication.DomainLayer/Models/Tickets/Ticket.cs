@@ -16,7 +16,7 @@ namespace ERPApplication.DomainLayer.Models.Tickets
         public int SupportTypeId { get;  set; }
         public int EmployeeId { get;  private set; }
         public int TicketStatusId { get; private set; }
-        //Newly Added
+       
         public Employee Employee { get; set; }
         public TicketSupportType SupportType { get; set; }
         public List<AllocatedTicket> AllocatedTickets { get; set; }
@@ -84,13 +84,12 @@ namespace ERPApplication.DomainLayer.Models.Tickets
         {
             AllocatedTickets.Where(t => t.DateClosed == null).Select(t => t).First().CloseTicket();
         }
-        public bool ValidateAllocatedTicketRules()
-        {
-            if (AllocatedTickets.Where(x => x.DateClosed == null).Count() <= 1)
-                throw new InvalidOperationException("Tickets Should Only Be Allocated To One Support Agent At A Time.");
-            return true;
-        }
 
+        public void UpdateTicket(int ticketStatusId, int supportTypeId)
+        {
+            SupportTypeId = supportTypeId;
+            TicketStatusId = ticketStatusId;  
+        }
 
 
     }
