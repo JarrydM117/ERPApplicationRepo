@@ -12,7 +12,6 @@ namespace ERPApplication.ApplicationLayer.Mapper
     public sealed class EmployeeMapper :IEntityMapper
     {
         private readonly RoleMapper _roleMapper;
-
         public EmployeeMapper(RoleMapper roleMapper)
         {
             _roleMapper = roleMapper;
@@ -30,13 +29,12 @@ namespace ERPApplication.ApplicationLayer.Mapper
 
         public Employee AuthenticatedDtoToEmployee(EmployeeAuthenticatedDTO authenticatedEmployee)
         {
-            Employee employee = new Employee(authenticatedEmployee.Id, authenticatedEmployee.FirstName, authenticatedEmployee.LastName, string.Empty,string.Empty,0,0,string.Empty);
-            return employee;
+            return new Employee(authenticatedEmployee.Id, authenticatedEmployee.FirstName, authenticatedEmployee.LastName, string.Empty, string.Empty, 0, 0, string.Empty); ;
         }
 
-        public Employee RegisterToEmployee(EmployeeRegisterationDTO employeeRegisteration)
+        public Employee RegisterToEmployee(EmployeeRegistrationDTO employeeRegistration)
         {
-            return new Employee(0, employeeRegisteration.FirstName, employeeRegisteration.LastName, string.Empty, string.Empty, employeeRegisteration.UnitId, employeeRegisteration.EmployeeStatusId, employeeRegisteration.JobTitle, employeeRegisteration.ReportingManagerId);
+            return new Employee(0, employeeRegistration.FirstName, employeeRegistration.LastName, string.Empty, string.Empty, employeeRegistration.UnitId, employeeRegistration.EmployeeStatusId, employeeRegistration.JobTitle, employeeRegistration.ReportingManagerId);
         }
 
         public EmployeePresentationDTO EmployeeToPresentation(Employee employee)
@@ -53,6 +51,5 @@ namespace ERPApplication.ApplicationLayer.Mapper
             }
             return employeePresentations;
         }
-
     }
 }

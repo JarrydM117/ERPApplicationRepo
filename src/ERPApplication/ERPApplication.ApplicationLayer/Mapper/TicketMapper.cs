@@ -33,7 +33,7 @@ namespace ERPApplication.ApplicationLayer.Mapper
 
         public TicketPresentationDTO TicketToTicketPresentation(Ticket ticket)
         {
-            return new TicketPresentationDTO(ticket.Id, ticket.Title, ticket.Employee.FirstName, ticket.Employee.LastName, ticket.DateIssued);
+            return new TicketPresentationDTO(ticket.Id, ticket.Title, ticket.Employee.FirstName, ticket.Employee.LastName, ticket.DateIssued);      
         }
 
         public TicketAllocatedPresentationDTO TicketToAllocatedPresenation(Ticket ticket, AllocatedTicketPresentationDTO allocatedTicketPresentationDTO)
@@ -53,7 +53,7 @@ namespace ERPApplication.ApplicationLayer.Mapper
 
         public TicketDTO TicketToTicketDTO(Ticket ticket)
         {
-            return new TicketDTO(ticket.Title, ticket.Body, ticket.DateIssued, ticket.EmployeeId, ticket.SupportTypeId, _allocatedMapper.AllocatedToAllocatedDTO(ticket.AllocatedTickets));
+             return new TicketDTO(ticket.Title, ticket.Body, ticket.DateIssued, ticket.EmployeeId, ticket.SupportTypeId, _allocatedMapper.AllocatedToAllocatedDTO(ticket.AllocatedTickets));
         }
 
     }

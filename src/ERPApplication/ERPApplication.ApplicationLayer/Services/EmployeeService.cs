@@ -1,4 +1,5 @@
-﻿using ERPApplication.ApplicationLayer.DTOs.Employee;
+﻿using ERPApplication.ApplicationLayer.Common;
+using ERPApplication.ApplicationLayer.DTOs.Employee;
 using ERPApplication.ApplicationLayer.Mapper;
 using ERPApplication.DomainLayer.Models.Organisation;
 using ERPApplication.InfrastructureLayer.Repository;
@@ -15,6 +16,7 @@ namespace ERPApplication.ApplicationLayer.Services
         private readonly EmployeeMapper _employeeMapper;
         private readonly EmployeeRepository _employeeRepository;
         private readonly RoleMapper _roleMapper;
+       // private readonly RoleRepository _roleRepository;
 
         public EmployeeService(EmployeeMapper employeeMapper, EmployeeRepository employeeRepository, RoleMapper roleMapper)
         {
@@ -23,39 +25,57 @@ namespace ERPApplication.ApplicationLayer.Services
             _roleMapper = roleMapper;
         }
 
-        public async Task<EmployeeAuthenticatedDTO?> AuthenticateEmployee(EmployeeCredentialsDTO credentials)
+        //Authentication of employee details.
+        public async Task<Result<EmployeeAuthenticatedDTO>> AuthenticateEmployee(EmployeeCredentialsDTO credentials)
         {
-            Employee employee = _employeeMapper.CredentialsToEmployee(credentials);
-            var employeeCred = await _employeeRepository.AuthenticateEmployee(employee);
-            if(employeeCred.VerifyCredentials(credentials.Password))
-            {
-                return _employeeMapper.EmployeeToAuthenticated(employee);
-            }
-            return null;
+                Employee employee = _employeeMapper.CredentialsToEmployee(credentials);
+                var employeeCred = await _employeeRepository.AuthenticateEmployee(employee);
+                //I was debating on whether to isolate these two conditions, with two different response codes.
+                //But due to the sensitive nature of the data, I decided not to.
+                if (employeeCred == null|| !employeeCred.VerifyCredentials(credentials.Password))
+                    return Result<EmployeeAuthenticatedDTO>.Unsuccessful(ErrorType.InvalidData,"Employee Authentication Details are Invalid.");
+                return Result<EmployeeAuthenticatedDTO>.Success(_employeeMapper.EmployeeToAuthenticated(employee));
+        }
+        public async Task<Result> UpdateEmployeeStatus(EmployeeStatusDTO employeeStatus)
+        {
+            var employee = await GetEmployeeWithId(employeeStatus.Id);
+            if(employee == null)
+                return Result.Unsuccessful(ErrorType.NotFound, "Employee Not Found.");
+            employee.UpdateEmployeeStatus(employeeStatus.StatusId);
+            return await UpdateEmployee(employee,1) ? Result.Success(): Result.Unsuccessful(ErrorType.FailedUpdate, "Could Not Update Employee.");
         }
 
-
-        public async Task<bool> RegisterEmployee(EmployeeRegisterationDTO employeeRegisteration)
+        public async Task<Result> RegisterEmployee(EmployeeRegistrationDTO employeeRegistration)
         {
-            Employee employee = _employeeMapper.RegisterToEmployee(employeeRegisteration);
+            Employee employee = _employeeMapper.RegisterToEmployee(employeeRegistration);
             string emailAddress =await BuildEmailAddress(employee.FirstName, employee.LastName,"@enters.co.za");
             employee.RegisterNewEmployee(emailAddress);
-            var validation = await _employeeRepository.RegisterEmployee(employee);
-            return validation;
+            var emp = await _employeeRepository.RegisterEmployee(employee);
+            return emp? Result.Success() : Result.Unsuccessful(ErrorType.FailedInsertion, "Could Not Insert Employee."); ;
         }
-
-        public async Task<List<EmployeePresentationDTO>> GetAllEmployees()
+        public async Task<Result<List<EmployeePresentationDTO>>> GetAllEmployees()
         {
-            return _employeeMapper.EmployeeToPresentation(await _employeeRepository.GetAll());
+            var employees = await _employeeRepository.GetAll();
+            return employees.Count() == 0 ? Result<List<EmployeePresentationDTO>>.Success(_employeeMapper.EmployeeToPresentation(employees)): Result<List<EmployeePresentationDTO>>.Unsuccessful(ErrorType.NotFound,"Could Not Find Employees");
         }
-        
-
-        private async Task<Employee> GetEmployeeWithId(int id)
+        public async Task<Result> EditEmployee(EmployeeEditDetailsDTO details)
+        {
+            var employee = await GetEmployeeWithId(details.Id);
+            if(employee == null)
+                return Result.Unsuccessful(ErrorType.NotFound, "Employee Not Found.");
+            employee.UpdateDetails(details.FirstName, details.LastName, details.JobTitle, details.UnitId, details.ReportingManagerId);
+            return await UpdateEmployee(employee, 1) ? Result.Success() : Result.Unsuccessful(ErrorType.FailedUpdate, "Could Not Update Employee") ;
+        }
+        #region Helper methods
+        private async Task<Employee?> GetEmployeeWithId(int id)
         {
             Employee? employee = await _employeeRepository.GetEmployee(id);
             return employee;
         }
-
+        private async Task<bool> UpdateEmployee(Employee employee, int updatesTotal)
+        {
+            return await _employeeRepository.UpdateEmployee(employee) == updatesTotal;
+        }
         private async Task<string> BuildEmailAddress(string firstName, string lastName, string domain)
         {
             bool flag = false;
@@ -69,5 +89,6 @@ namespace ERPApplication.ApplicationLayer.Services
             }
             return emailAddress;
         }
+        #endregion
     }
 }

@@ -14,12 +14,16 @@ namespace ERPApplication.InfrastructureLayer.Data
     public class ERPDataContext : DbContext
     {
         public DbSet<Role> Roles { get; set; }
-        //public DbSet<EmployeeLeaveRequest> EmployeeLeaveRequests { get; set; }
+        public DbSet<EmployeeLeaveRequest> EmployeeLeaveRequests { get; set; }
         public DbSet<EmployeeLeave> EmployeeLeave {  get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<TicketAttachedFiles> TicketAttachedFiles { get; set; }
-
-
+        public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<AllocatedTicket> AllocatedTicket { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<LeaveType> LeaveTypes { get; set; }
+        public DbSet<TicketSupportType> TicketSupportTypes { get; set; }
+        public DbSet<Unit> Units { get; set; }
         public ERPDataContext(DbContextOptions<ERPDataContext> options):base(options)
         { 
 

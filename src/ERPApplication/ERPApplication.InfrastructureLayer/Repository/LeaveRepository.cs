@@ -17,8 +17,6 @@ namespace ERPApplication.InfrastructureLayer.Repository
             _context = context;
         }
 
-     
-
 
     }
 }

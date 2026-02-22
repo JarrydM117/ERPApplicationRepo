@@ -4,6 +4,7 @@ using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace ERPApplication.DomainLayer.Models.Organisation
@@ -44,8 +45,7 @@ namespace ERPApplication.DomainLayer.Models.Organisation
         public bool VerifyCredentials(string password)
         {
             PasswordHasher pw = new PasswordHasher();
-            var result = pw.VerifyHashedPassword(Password, password);
-            return result == PasswordVerificationResult.Success;
+            return pw.VerifyHashedPassword(Password, password) == PasswordVerificationResult.Success;
         }
 
         private string GenerateRandomPassword()
@@ -63,8 +63,25 @@ namespace ERPApplication.DomainLayer.Models.Organisation
         }
 
 
+        public void UpdateDetails(string firstName, string lastName, string jobTitle,int unitId,int reportingManager)
+        {
+            if (ValidateEmployeeStatus())
+                throw new InvalidOperationException("Employee account is no longer active.");
+            FirstName = firstName;
+            LastName = lastName;
+            JobTitle = jobTitle;
+            UnitId = unitId;
+            ReportingManagerId = reportingManager;
+        }
 
-
+        public void UpdateEmployeeStatus(int statusId)
+        {
+            EmployeeStatusId = statusId;
+        }
+        public bool ValidateEmployeeStatus()
+        {
+            return EmployeeStatusId == 3;
+        }
 
     }
 }

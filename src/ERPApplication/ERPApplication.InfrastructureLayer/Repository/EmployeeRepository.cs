@@ -17,71 +17,57 @@ namespace ERPApplication.InfrastructureLayer.Repository
         {
             _context = context;
         }
-
-      
-        public async Task<Employee> AuthenticateEmployee(Employee employee)
+        public async Task<Employee?> AuthenticateEmployee(Employee employee)
         {
-            var employeeCred = await _context
-                                    .Set<Employee>()                          
-                                    .SingleAsync(e => e.EmailAddress == employee.EmailAddress);
-            return employeeCred;
+                var employeeCred = await _context
+                                        .Employees
+                                        .SingleOrDefaultAsync(e => e.EmailAddress == employee.EmailAddress);
+                return employeeCred;
         }
-
         public async Task<bool> RegisterEmployee(Employee employee)
         {
-     
                 var newEmployee = await _context
-                                        .Set<Employee>()
+                                        .Employees
                                         .AddAsync(employee);
-                await _context.SaveChangesAsync();
-                return true;
-
+                return await _context.SaveChangesAsync() == 1;
         }
-
         public async Task<bool> ValidateEmailAddress(string emailAddress)
         {
             var validate = await _context.
                                     Set<Employee>()
                                     .Where(e => e.EmailAddress == emailAddress)
                                     .Select(e => e)
-                                    .FirstOrDefaultAsync();
+                                    .SingleOrDefaultAsync();
+
             return validate == null;
         }
-
-        public async Task<Employee> GetEmployee(int id)
+        public async Task<Employee?> GetEmployee(int id)
         {
-            Employee employee = await _context
+            var employee = await _context
                                         .Set<Employee>()
-                                        .Include(e=> e.Roles)
-                                        .SingleAsync(e=> e.Id == id);
+                                        .Include(e => e.Roles)
+                                        .SingleOrDefaultAsync(e => e.Id == id);
             return employee;
         }
         public async Task<List<Employee>> GetAll()
         {
-           return await _context
-                            .Set<Employee>()
-                            .Include(e=>e.Roles)
-                            .ToListAsync();
+                return await _context
+                                 .Set<Employee>()
+                                 .Include(e => e.Roles)
+                                 .ToListAsync();
         }
-
         public async Task<List<Employee>> GetAllSubordinates(int managerId)
         {
-            var employees = await _context
-                                        .Set<Employee>()
-                                        .Where(e => e.ReportingManagerId == managerId)
-                                        .ToListAsync();
-            return employees;
+            return await _context
+                            .Set<Employee>()
+                            .Where(e => e.ReportingManagerId == managerId)
+                            .ToListAsync();
         }
-
-        public async Task<bool> EditRoles(Employee employee)
+        public async Task<int> UpdateEmployee(Employee employee)
         {
-            var employeeAddRoles = await _context
-                                            .Set<Employee>()
-                                            .Include(e => e.Roles)
-                                            .SingleAsync(e=>e.Id == employee.Id);
-            employeeAddRoles.Roles = employee.Roles;
-            var validate =  await _context.SaveChangesAsync();
-            return validate > 1;
+            _context.Set<Employee>().Update(employee);
+            return await _context.SaveChangesAsync();
+
         }
     }
 }

@@ -33,44 +33,43 @@ namespace ERPApplication.InfrastructureLayer.Repository
              _context.Set<Ticket>().Update(ticket);
              return await _context.SaveChangesAsync();
         }
-        public async Task<Ticket> Get(int id)
+        public async Task<Ticket?> Get(int id)
         {
             return await _context
                             .Set<Ticket>()
                             .Include(t => t.AllocatedTickets)
-                            .SingleAsync(t => t.Id == id);
+                            .SingleOrDefaultAsync(t => t.Id == id);
         }
         public async Task<bool> Create(Ticket ticket)
         {
             await _context
                         .Set<Ticket>()
                         .AddAsync(ticket);
-            var validate = await _context.SaveChangesAsync();
-            return validate == 1;
+            return await _context.SaveChangesAsync() == 1;
         }
         public async Task<List<Ticket>> GetAll(int employeeId, bool isOpen, int position)
         {
-            var tickets = await _context
-                                    .Set<Ticket>()
-                                    .Include(t=>t.AllocatedTickets
-                                    .Where(a=>a.EmployeeId == employeeId && isOpen ? (a.DateClosed == null) : (a.DateClosed!=null))
-                                    .OrderBy(a=>a.DateAllocated))
-                                    .Skip(position)
-                                    .Take(10)
-                                    .ToListAsync();
-            return tickets;
+            return await _context
+                                .Set<Ticket>()
+                                .Include(t=>t.AllocatedTickets
+                                .Where(a=>a.EmployeeId == employeeId && isOpen ? (a.DateClosed == null) : (a.DateClosed!=null))
+                                .OrderBy(a=>a.DateAllocated))
+                                .Skip(position)
+                                .Take(10)
+                                .ToListAsync();
+        
         }
         public async Task<List<Ticket>> GetAll(int employeeId, int ticketStatusId, int position)
         {
-            var tickets = await _context
-                                    .Set<Ticket>()
-                                    .Include(t => t.AllocatedTickets)
-                                    .Where(t=>t.TicketStatusId == ticketStatusId  && t.EmployeeId == employeeId)
-                                    .OrderBy(t => t.DateIssued)
-                                    .Skip(position)
-                                    .Take(10)
-                                    .ToListAsync();
-            return tickets;
+            return await _context
+                                .Set<Ticket>()
+                                .Include(t => t.AllocatedTickets)
+                                .Where(t=>t.TicketStatusId == ticketStatusId  && t.EmployeeId == employeeId)
+                                .OrderBy(t => t.DateIssued)
+                                .Skip(position)
+                                .Take(10)
+                                .ToListAsync();
+            
         }
     }
 }
