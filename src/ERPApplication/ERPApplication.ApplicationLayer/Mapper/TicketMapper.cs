@@ -31,9 +31,15 @@ namespace ERPApplication.ApplicationLayer.Mapper
             return new Ticket(0, ticket.Title, ticket.Body, DateTime.Now,0,ticket.EmployeeId,ticket.TicketSupportTypeId);
         }
 
+        public Ticket CreationToTicket(TicketCreationDTO ticket)
+        {
+            return new Ticket(0, ticket.Title, ticket.Body, DateTime.Now, 0, ticket.EmployeeId, ticket.TicketSupportTypeId);
+        }
+
+
         public TicketPresentationDTO TicketToTicketPresentation(Ticket ticket)
         {
-            return new TicketPresentationDTO(ticket.Id, ticket.Title, ticket.Employee.FirstName, ticket.Employee.LastName, ticket.DateIssued);      
+            return new TicketPresentationDTO(ticket.Id, ticket.Title, ticket.Employee.FirstName, ticket.Employee.LastName, ticket.DateIssued,null);      
         }
 
         public TicketAllocatedPresentationDTO TicketToAllocatedPresenation(Ticket ticket, AllocatedTicketPresentationDTO allocatedTicketPresentationDTO)

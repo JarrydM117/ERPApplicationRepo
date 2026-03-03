@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace ERPApplication.ApplicationLayer.DTOs.Ticket
 {
-    public record TicketDTO(string Title, string Body, DateTime DateIssued, int EmployeeId, int TicketSupportTypeId, List<AllocatedTicketDTO> AllocatedTickets);
+    public record TicketDTO(string Title, string Body, DateTime DateIssued, int EmployeeId, int TicketSupportTypeId, List<AllocatedTicketDTO>? AllocatedTickets);
 }

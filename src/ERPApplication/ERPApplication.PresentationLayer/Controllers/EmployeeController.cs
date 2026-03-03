@@ -12,55 +12,45 @@ namespace ERPApplication.PresentationLayer.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        private EmployeeService employeeService;
+        private EmployeeService _employeeService;
 
         public EmployeeController(EmployeeService employeeService)
         {
-            this.employeeService = employeeService;
+            _employeeService = employeeService;
         }
 
 
         [HttpPost("Registration")]
         public async Task<IActionResult> Registration(EmployeeRegistrationDTO employee)
-        {
-            var result = await employeeService.RegisterEmployee(employee);
-            return ResultMapper.ReturnResult(result);
-        }
+        =>  ResultMapper.ReturnResult(await _employeeService.RegisterEmployee(employee));
+        
 
         [HttpPut("Login")]
-        public async Task<IActionResult> Login([FromBody] EmployeeCredentialsDTO credentials)
-        {
-            var result = await employeeService.AuthenticateEmployee(credentials);
-            return ResultMapper.ReturnResult(result);
-        }
+        public async Task<IActionResult> Login([FromBody] EmployeeCredentialsDTO credentials) 
+        => ResultMapper.ReturnResult(await _employeeService.AuthenticateEmployee(credentials));
+        
 
         [HttpGet("GetAllEmployees")]
-        public async Task<IActionResult> GetAllEmployees()
-        {
-            var result = await employeeService.GetAllEmployees();
-            return ResultMapper.ReturnResult(result);
-        }
+        public async Task<IActionResult> GetAllEmployees() 
+        => ResultMapper.ReturnResult(await _employeeService.GetAllEmployees());
+        
 
         [HttpPut("UpdateEmployeeStatus")]
         public async Task<IActionResult> UpdateEmployeeStatus(EmployeeStatusDTO employeeStatus)
-        {
-            var result = await employeeService.UpdateEmployeeStatus(employeeStatus);
-            return ResultMapper.ReturnResult(result);
-        }
+        => ResultMapper.ReturnResult(await _employeeService.UpdateEmployeeStatus(employeeStatus));
+        
 
         [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll()
-        {
-            var result = await employeeService.GetAllEmployees();
-            return ResultMapper.ReturnResult(result);
-        }
+        public async Task<IActionResult> GetAll() 
+        => ResultMapper.ReturnResult(await _employeeService.GetAllEmployees());
+        
 
         [HttpPut("UpdateEmployee")]
         public async Task<IActionResult> UpdateEmployee([FromBody] EmployeeEditDetailsDTO employee)
-        {
-            var result = await employeeService.EditEmployee(employee);
-            return ResultMapper.ReturnResult(result);
-        }
-
+        => ResultMapper.ReturnResult(await _employeeService.EditEmployee(employee));
+        
+        [HttpPut("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] EmployeePasswordUpdateDTO passwordUpdate)
+        =>ResultMapper.ReturnResult(await _employeeService.UpdatePassword(passwordUpdate));
     }
 }

@@ -1,4 +1,5 @@
-﻿using ERPApplication.DomainLayer.Models.Organisation;
+﻿using ERPApplication.DomainLayer.Models.Common;
+using ERPApplication.DomainLayer.Models.Organisation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,26 +39,29 @@ namespace ERPApplication.DomainLayer.Models.Tickets
             TicketStatusId = 1;
         }
 
-        public void AssignTicket(int employeeId)
+        public bool AssignTicket(int employeeId)
         {
-            AllocatedTickets.Add(new AllocatedTicket(0,employeeId,DateTime.Now));
-            if(AllocatedTickets.Count()==1)
-            {
-                TicketStatusId = 2;
-            }
+            if (TicketStatusId != 1)
+                return false;
+            TicketStatusId = 2;
+            AllocateTicket(employeeId);
+            return true;
+        }
+
+        private void AllocateTicket(int employeeId)
+        {
+            AllocatedTickets.Add(new AllocatedTicket(0, employeeId, DateTime.Now));
         }
 
        
-        public AllocatedTicket GetOpenTicket()
+        public AllocatedTicket? GetOpenTicket()
         {
-            if(TicketStatusId == 1 && TicketStatusId == 4)
+            if((TicketStatusId == 1 || TicketStatusId == 4) || AllocatedTickets.Count() == 0)
             {
-                throw new Exception("Ticket cannot be allocated with current ticket status.");
-            }
-            return AllocatedTickets.Where(t => t.DateClosed == null).First();
-
+                return null;
+            } 
+            return AllocatedTickets.Where(t => t.DateClosed == null).FirstOrDefault();
         }
-
 
         public bool ValidateClosedTickets()
         {
@@ -69,7 +73,7 @@ namespace ERPApplication.DomainLayer.Models.Tickets
         public void CloseTicket()
         {
             CloseAssignment();
-            if (!ValidateClosedTickets())
+            if (ValidateClosedTickets())
                 throw new InvalidOperationException("All allocated tickets must be closed.");
             TicketStatusId = 4;
         }
@@ -77,10 +81,14 @@ namespace ERPApplication.DomainLayer.Models.Tickets
         public void TransferTicket(int employeeId)
         {
             CloseAssignment();
-            AssignTicket(employeeId);
+            AllocateTicket(employeeId);
+        }
+        private bool ValidateAllocatedTickets()
+        {
+            return AllocatedTickets.Where(t => t.DateClosed == null).Count() <= 1;
         }
         
-        private  void CloseAssignment()
+        private void CloseAssignment()
         {
             AllocatedTickets.Where(t => t.DateClosed == null).Select(t => t).First().CloseTicket();
         }

@@ -34,14 +34,13 @@ namespace ERPApplication.ApplicationLayer.Mapper
 
         public Employee RegisterToEmployee(EmployeeRegistrationDTO employeeRegistration)
         {
-            return new Employee(0, employeeRegistration.FirstName, employeeRegistration.LastName, string.Empty, string.Empty, employeeRegistration.UnitId, employeeRegistration.EmployeeStatusId, employeeRegistration.JobTitle, employeeRegistration.ReportingManagerId);
+            return new Employee(0, employeeRegistration.FirstName, employeeRegistration.LastName, string.Empty, string.Empty, employeeRegistration.UnitId, 0 , employeeRegistration.JobTitle, employeeRegistration.ReportingManagerId);
         }
 
         public EmployeePresentationDTO EmployeeToPresentation(Employee employee)
         {
-            return new EmployeePresentationDTO(employee.FirstName, employee.LastName, employee.EmailAddress, employee.JobTitle, employee.UnitId ?? 0, employee.EmployeeStatusId);
+            return new EmployeePresentationDTO(employee.FirstName, employee.LastName, employee.EmailAddress, employee.JobTitle, employee.UnitId, employee.EmployeeStatusId);
         }
-
         public List<EmployeePresentationDTO> EmployeeToPresentation(List<Employee> employees)
         {
             List<EmployeePresentationDTO> employeePresentations = new List<EmployeePresentationDTO>();

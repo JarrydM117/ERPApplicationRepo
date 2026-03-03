@@ -18,27 +18,24 @@ namespace ERPApplication.InfrastructureLayer.Data.Configurations
             builder.
                 HasMany(e=>e.Roles)
                 .WithMany()
-                .UsingEntity("EmployeeeRoleBridge");
-
+                .UsingEntity("EmployeeeRoleBridge"); 
             builder
                 .HasMany<Unit>()
                 .WithOne()
                 .HasForeignKey(e=>e.UnitHead)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.ClientNoAction);
-
             builder
                 .HasOne<Employee>()
                 .WithMany()
                 .HasForeignKey(e => e.ReportingManagerId)
                 .IsRequired(false);
-
             builder
                 .HasOne<Department>()
                 .WithOne(e=>e.Employee)
                 .HasForeignKey<Department>(e => e.DepartmentHead)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.ClientNoAction);
-
             builder
                 .HasMany<AllocatedTicket>()
                 .WithOne(e=>e.Employee)
@@ -46,13 +43,12 @@ namespace ERPApplication.InfrastructureLayer.Data.Configurations
                 .IsRequired();
 
             builder
-                .HasMany<EmployeeLeave>()
+                .HasMany<Leave>()
                 .WithOne()
                 .HasForeignKey(e => e.EmployeeId)
                 .IsRequired();
-
             builder
-                .HasMany<EmployeeLeaveRequest>()
+                .HasMany<LeaveRequest>()
                 .WithOne()
                 .HasForeignKey(e => e.EmployeeId)
                 .IsRequired();
@@ -61,6 +57,11 @@ namespace ERPApplication.InfrastructureLayer.Data.Configurations
                 .HasOne(e => e.EmployeeStatus)
                 .WithMany()
                 .HasForeignKey(e => e.EmployeeStatusId)
+                .IsRequired();
+            builder
+                .HasOne<EmployeeOTP>()
+                .WithOne(e=> e.Employee)
+                .HasForeignKey<EmployeeOTP>(e=>e.EmployeeId)
                 .IsRequired();
         }
     }

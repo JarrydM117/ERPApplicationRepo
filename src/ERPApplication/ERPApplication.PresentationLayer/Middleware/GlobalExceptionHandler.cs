@@ -14,7 +14,7 @@ namespace ERPApplication.PresentationLayer.Middleware
                 Detail = "An Internal Server Error has Occurred."
             };
             httpContext.Response.StatusCode = problemDetails.Status.Value;
-            await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+            await httpContext.Response.WriteAsJsonAsync(problemDetails,cancellationToken);
             return true;
         }
     }

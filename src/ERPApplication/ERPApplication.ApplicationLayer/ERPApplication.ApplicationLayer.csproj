@@ -15,4 +15,8 @@
     <ProjectReference Include="..\ERPApplication.InfrastructureLayer\ERPApplication.InfrastructureLayer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTOs\Leave\" />
+  </ItemGroup>
+
 </Project>

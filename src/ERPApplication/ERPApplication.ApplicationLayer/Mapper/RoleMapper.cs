@@ -23,7 +23,7 @@ namespace ERPApplication.ApplicationLayer.Mapper
         {
             List<Role> roles = new List<Role>();
             foreach (RoleEmployeeDTO r in rolesEmployees)
-                roles.Add(new Role(r.Id, r.Name, string.Empty));
+                roles.Add(new Role(r.Id, r.Name, string.Empty,DateTime.Now,0));
             return roles;
 
         }

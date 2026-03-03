@@ -16,7 +16,8 @@ namespace ERPApplication.InfrastructureLayer.Data.Configurations
             builder
                 .HasMany<Employee>()
                 .WithOne()
-                .HasForeignKey(e=>e.UnitId);
+                .HasForeignKey(e=>e.UnitId)
+                .IsRequired();
 
             builder
                 .HasOne<Department>()

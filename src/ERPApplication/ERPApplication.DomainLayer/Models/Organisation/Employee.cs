@@ -1,4 +1,4 @@
-﻿using ERPApplication.DomainLayer.Models;
+﻿using ERPApplication.DomainLayer.Models.Common;
 using ERPApplication.DomainLayer.Models.Tickets;
 using Microsoft.AspNet.Identity;
 using System;
@@ -18,12 +18,12 @@ namespace ERPApplication.DomainLayer.Models.Organisation
         public DateTime DateRegistered { get; private set; }
         public string JobTitle { get; private set; }
         public int? ReportingManagerId {  get;  private set; }
-        public int? UnitId { get; private set; }
+        public int UnitId { get; private set; }
         public EmployeeStatus EmployeeStatus { get; set; }
         public int EmployeeStatusId { get; private set; }
         public List<Role> Roles { get;  set; }
 
-        public Employee(int id, string firstName, string lastName, string emailAddress, string password, int? unitId, int employeeStatusId, string jobTitle,int? reportingManagerId=null) : base(id)
+        public Employee(int id, string firstName, string lastName, string emailAddress, string password, int unitId, int employeeStatusId, string jobTitle,int? reportingManagerId=null) : base(id)
         {
             FirstName = firstName;
             LastName = lastName;
@@ -39,31 +39,12 @@ namespace ERPApplication.DomainLayer.Models.Organisation
         {
             DateRegistered = DateTime.Now;
             Password = GenerateRandomPassword();
+            EmployeeStatusId = 1;
             EmailAddress = emailAddress;
         }
 
-        public bool VerifyCredentials(string password)
-        {
-            PasswordHasher pw = new PasswordHasher();
-            return pw.VerifyHashedPassword(Password, password) == PasswordVerificationResult.Success;
-        }
-
-        private string GenerateRandomPassword()
-        {
-            Random rand = new Random();
-            var charArr = new string("qwertyuiopasdfghjklzxcvbnm1234567890").ToCharArray();
-            string password = string.Empty;
-            for(int i=0; i < 20;i++)
-            {
-                password += charArr[rand.Next(0, charArr.Length)];
-            }
-            PasswordHasher pw = new PasswordHasher();
-            password = pw.HashPassword(password);
-            return password;
-        }
-
-
-        public void UpdateDetails(string firstName, string lastName, string jobTitle,int unitId,int reportingManager)
+ 
+        public void UpdateDetails(string firstName, string lastName, string jobTitle,int unitId,int? reportingManager)
         {
             if (ValidateEmployeeStatus())
                 throw new InvalidOperationException("Employee account is no longer active.");
@@ -83,5 +64,40 @@ namespace ERPApplication.DomainLayer.Models.Organisation
             return EmployeeStatusId == 3;
         }
 
+
+        #region Password Methods
+
+        private string GenerateRandomPassword()
+        {
+            Random rand = new Random();
+            var charArr = new string("qwertyuiopasdfghjklzxcvbnm1234567890").ToCharArray();
+            string password = string.Empty;
+            for (int i = 0; i < 20; i++)
+            {
+                password += charArr[rand.Next(0, charArr.Length)];
+            }
+            return HashPassword(password);
+        }
+        private string HashPassword(string password)
+        {
+            PasswordHasher pw = new PasswordHasher();
+            password = pw.HashPassword(password);
+            return password;
+        }
+        public void UpdatePassword(string password)
+        {
+
+            Password = HashPassword(password);
+        }
+        public bool ValidatePasswordLength(string password)
+        {
+            return password.Length > 12;
+        }
+        public bool VerifyCredentials(string password)
+        {
+            PasswordHasher pw = new PasswordHasher();
+            return pw.VerifyHashedPassword(Password, password) == PasswordVerificationResult.Success;
+        }
+        #endregion
     }
 }

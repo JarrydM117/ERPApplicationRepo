@@ -18,15 +18,16 @@ namespace ERPApplication.InfrastructureLayer.Repository
             _context = context;
         }
 
-        public async Task<List<Ticket>> GetUnallocatedTickets(int ticketStatusId, int unitId)
+        public async Task<List<Ticket>> GetUnallocatedTickets(int unitId)
         {
             var tickets = await _context
                                     .Set<Ticket>()
-                                    .Where(t => t.TicketStatusId == ticketStatusId)
+                                    .Where(t => t.TicketStatusId == 1)
+                                    .Include(e=>e.Employee)
                                     .Include(s => s.SupportType)
+                                    .ThenInclude(s=>s.Units.Where(e=>e.Id == unitId))
                                     .ToListAsync();
-            List<Ticket> ticketToRet = tickets.Where(s=> s.SupportType.Units.Where(p=>p.Id==unitId).Any()).ToList();
-            return ticketToRet;
+            return tickets;
         }
         public async Task<int> UpdateTicket(Ticket ticket)
         {
@@ -36,7 +37,7 @@ namespace ERPApplication.InfrastructureLayer.Repository
         public async Task<Ticket?> Get(int id)
         {
             return await _context
-                            .Set<Ticket>()
+                            .Tickets
                             .Include(t => t.AllocatedTickets)
                             .SingleOrDefaultAsync(t => t.Id == id);
         }
@@ -50,10 +51,9 @@ namespace ERPApplication.InfrastructureLayer.Repository
         public async Task<List<Ticket>> GetAll(int employeeId, bool isOpen, int position)
         {
             return await _context
-                                .Set<Ticket>()
-                                .Include(t=>t.AllocatedTickets
-                                .Where(a=>a.EmployeeId == employeeId && isOpen ? (a.DateClosed == null) : (a.DateClosed!=null))
-                                .OrderBy(a=>a.DateAllocated))
+                                .Tickets
+                                .Where(t => t.AllocatedTickets.Any(s => s.EmployeeId == employeeId && (isOpen ? s.DateClosed == null : s.DateClosed != null)))
+                                .Include(t => t.AllocatedTickets.Where(e=>e.EmployeeId == employeeId))
                                 .Skip(position)
                                 .Take(10)
                                 .ToListAsync();

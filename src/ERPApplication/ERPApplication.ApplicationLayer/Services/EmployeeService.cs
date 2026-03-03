@@ -34,8 +34,9 @@ namespace ERPApplication.ApplicationLayer.Services
                 //But due to the sensitive nature of the data, I decided not to.
                 if (employeeCred == null|| !employeeCred.VerifyCredentials(credentials.Password))
                     return Result<EmployeeAuthenticatedDTO>.Unsuccessful(ErrorType.InvalidData,"Employee Authentication Details are Invalid.");
-                return Result<EmployeeAuthenticatedDTO>.Success(_employeeMapper.EmployeeToAuthenticated(employee));
+                return Result<EmployeeAuthenticatedDTO>.Success(_employeeMapper.EmployeeToAuthenticated(employeeCred));
         }
+
         public async Task<Result> UpdateEmployeeStatus(EmployeeStatusDTO employeeStatus)
         {
             var employee = await GetEmployeeWithId(employeeStatus.Id);
@@ -53,11 +54,22 @@ namespace ERPApplication.ApplicationLayer.Services
             var emp = await _employeeRepository.RegisterEmployee(employee);
             return emp? Result.Success() : Result.Unsuccessful(ErrorType.FailedInsertion, "Could Not Insert Employee."); ;
         }
+
+        public async Task<Result> UpdatePassword(EmployeePasswordUpdateDTO passwordUpdate)
+        {
+            var employee = await GetEmployeeWithId(passwordUpdate.Id);
+            if (employee == null)
+                return Result.Unsuccessful(ErrorType.NotFound, "Employee Not Found.");
+            employee.UpdatePassword(passwordUpdate.Password);
+            return await UpdateEmployee(employee, 1) ? Result.Success() : Result.Unsuccessful(ErrorType.FailedUpdate, "Could Not Update Employee Details");
+        }
+
         public async Task<Result<List<EmployeePresentationDTO>>> GetAllEmployees()
         {
             var employees = await _employeeRepository.GetAll();
-            return employees.Count() == 0 ? Result<List<EmployeePresentationDTO>>.Success(_employeeMapper.EmployeeToPresentation(employees)): Result<List<EmployeePresentationDTO>>.Unsuccessful(ErrorType.NotFound,"Could Not Find Employees");
+            return employees.Count() != 0 ? Result<List<EmployeePresentationDTO>>.Success(_employeeMapper.EmployeeToPresentation(employees)): Result<List<EmployeePresentationDTO>>.Unsuccessful(ErrorType.NotFound,"Could Not Find Employees");
         }
+
         public async Task<Result> EditEmployee(EmployeeEditDetailsDTO details)
         {
             var employee = await GetEmployeeWithId(details.Id);
@@ -66,6 +78,7 @@ namespace ERPApplication.ApplicationLayer.Services
             employee.UpdateDetails(details.FirstName, details.LastName, details.JobTitle, details.UnitId, details.ReportingManagerId);
             return await UpdateEmployee(employee, 1) ? Result.Success() : Result.Unsuccessful(ErrorType.FailedUpdate, "Could Not Update Employee") ;
         }
+
         #region Helper methods
         private async Task<Employee?> GetEmployeeWithId(int id)
         {

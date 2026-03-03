@@ -17,9 +17,13 @@ namespace ERPApplication.ApplicationLayer
         {
             services.AddScoped<EmployeeService>();
             services.AddScoped<TicketMapper>();
+            services.AddScoped<TicketService>();
+            services.AddScoped<OTPMapper>();
             services.AddScoped<EmployeeMapper>();
             services.AddScoped<RoleMapper>();
             services.AddScoped<AllocatedTicketMapper>();
+            services.AddScoped<OTPService>();
+
             return services;
         }
     }

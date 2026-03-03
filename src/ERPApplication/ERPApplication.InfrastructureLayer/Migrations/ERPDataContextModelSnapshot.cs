@@ -22,7 +22,7 @@ namespace ERPApplication.InfrastructureLayer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Leave.EmployeeLeave", b =>
+            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Leave.Leave", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,14 +30,14 @@ namespace ERPApplication.InfrastructureLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("Cycle")
+                        .HasColumnType("int");
+
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("LeaveAmmount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("LeaveCarriedOver")
-                        .HasColumnType("int");
+                    b.Property<double>("LeaveAmmount")
+                        .HasColumnType("float");
 
                     b.Property<DateTime>("LeaveCycleStart")
                         .HasColumnType("datetime2");
@@ -45,7 +45,7 @@ namespace ERPApplication.InfrastructureLayer.Migrations
                     b.Property<int>("LeaveTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("NumberOfCycles")
+                    b.Property<int>("TotalAmountOfLeavePerCycle")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -54,10 +54,14 @@ namespace ERPApplication.InfrastructureLayer.Migrations
 
                     b.HasIndex("LeaveTypeId");
 
-                    b.ToTable("EmployeeLeave");
+                    b.ToTable("Leave");
+
+                    b.HasDiscriminator<int>("LeaveTypeId");
+
+                    b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Leave.EmployeeLeaveRequest", b =>
+            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Leave.LeaveRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -94,7 +98,7 @@ namespace ERPApplication.InfrastructureLayer.Migrations
 
                     b.HasIndex("LeaveTypeId");
 
-                    b.ToTable("EmployeeLeaveRequest");
+                    b.ToTable("LeaveRequests");
                 });
 
             modelBuilder.Entity("ERPApplication.DomainLayer.Models.Leave.LeaveStatus", b =>
@@ -128,7 +132,7 @@ namespace ERPApplication.InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LeaveType");
+                    b.ToTable("LeaveTypes");
                 });
 
             modelBuilder.Entity("ERPApplication.DomainLayer.Models.Organisation.Department", b =>
@@ -139,7 +143,7 @@ namespace ERPApplication.InfrastructureLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DepartmentHead")
+                    b.Property<int?>("DepartmentHead")
                         .HasColumnType("int");
 
                     b.Property<string>("DepartmentName")
@@ -149,7 +153,8 @@ namespace ERPApplication.InfrastructureLayer.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentHead")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[DepartmentHead] IS NOT NULL");
 
                     b.ToTable("Departments");
                 });
@@ -191,7 +196,7 @@ namespace ERPApplication.InfrastructureLayer.Migrations
                     b.Property<int?>("ReportingManagerId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UnitId")
+                    b.Property<int>("UnitId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -202,7 +207,33 @@ namespace ERPApplication.InfrastructureLayer.Migrations
 
                     b.HasIndex("UnitId");
 
-                    b.ToTable("Employee");
+                    b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Organisation.EmployeeOTP", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateLogged")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OTP")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId")
+                        .IsUnique();
+
+                    b.ToTable("OTP");
                 });
 
             modelBuilder.Entity("ERPApplication.DomainLayer.Models.Organisation.EmployeeStatus", b =>
@@ -230,6 +261,9 @@ namespace ERPApplication.InfrastructureLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -238,7 +272,12 @@ namespace ERPApplication.InfrastructureLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("RoleOwner")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("RoleOwner");
 
                     b.ToTable("Roles");
                 });
@@ -251,10 +290,10 @@ namespace ERPApplication.InfrastructureLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DepartmentId")
+                    b.Property<int?>("DepartmentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UnitHead")
+                    b.Property<int?>("UnitHead")
                         .HasColumnType("int");
 
                     b.Property<string>("UnitName")
@@ -267,7 +306,7 @@ namespace ERPApplication.InfrastructureLayer.Migrations
 
                     b.HasIndex("UnitHead");
 
-                    b.ToTable("Unit");
+                    b.ToTable("Units");
                 });
 
             modelBuilder.Entity("ERPApplication.DomainLayer.Models.Tickets.AllocatedTicket", b =>
@@ -335,7 +374,7 @@ namespace ERPApplication.InfrastructureLayer.Migrations
 
                     b.HasIndex("TicketStatusId");
 
-                    b.ToTable("Ticket");
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("ERPApplication.DomainLayer.Models.Tickets.TicketAttachedFiles", b =>
@@ -395,7 +434,7 @@ namespace ERPApplication.InfrastructureLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TicketSupportType");
+                    b.ToTable("TicketSupportTypes");
                 });
 
             modelBuilder.Entity("EmployeeeRoleBridge", b =>
@@ -428,7 +467,38 @@ namespace ERPApplication.InfrastructureLayer.Migrations
                     b.ToTable("TicketSupportTypeUnitBridge");
                 });
 
-            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Leave.EmployeeLeave", b =>
+            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Leave.AnnualLeave", b =>
+                {
+                    b.HasBaseType("ERPApplication.DomainLayer.Models.Leave.Leave");
+
+                    b.Property<double>("LeaveCarriedOver")
+                        .HasColumnType("float");
+
+                    b.HasDiscriminator().HasValue(2);
+                });
+
+            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Leave.FamilyResponsibilityLeave", b =>
+                {
+                    b.HasBaseType("ERPApplication.DomainLayer.Models.Leave.Leave");
+
+                    b.HasDiscriminator().HasValue(3);
+                });
+
+            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Leave.SickLeave", b =>
+                {
+                    b.HasBaseType("ERPApplication.DomainLayer.Models.Leave.Leave");
+
+                    b.HasDiscriminator().HasValue(1);
+                });
+
+            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Leave.UnpaidLeave", b =>
+                {
+                    b.HasBaseType("ERPApplication.DomainLayer.Models.Leave.Leave");
+
+                    b.HasDiscriminator().HasValue(4);
+                });
+
+            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Leave.Leave", b =>
                 {
                     b.HasOne("ERPApplication.DomainLayer.Models.Organisation.Employee", null)
                         .WithMany()
@@ -436,14 +506,16 @@ namespace ERPApplication.InfrastructureLayer.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ERPApplication.DomainLayer.Models.Leave.LeaveType", null)
+                    b.HasOne("ERPApplication.DomainLayer.Models.Leave.LeaveType", "LeaveType")
                         .WithMany()
                         .HasForeignKey("LeaveTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("LeaveType");
                 });
 
-            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Leave.EmployeeLeaveRequest", b =>
+            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Leave.LeaveRequest", b =>
                 {
                     b.HasOne("ERPApplication.DomainLayer.Models.Organisation.Employee", null)
                         .WithMany()
@@ -471,8 +543,7 @@ namespace ERPApplication.InfrastructureLayer.Migrations
                     b.HasOne("ERPApplication.DomainLayer.Models.Organisation.Employee", "Employee")
                         .WithOne()
                         .HasForeignKey("ERPApplication.DomainLayer.Models.Organisation.Department", "DepartmentHead")
-                        .OnDelete(DeleteBehavior.ClientNoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.ClientNoAction);
 
                     b.Navigation("Employee");
                 });
@@ -491,18 +562,40 @@ namespace ERPApplication.InfrastructureLayer.Migrations
 
                     b.HasOne("ERPApplication.DomainLayer.Models.Organisation.Unit", null)
                         .WithMany()
-                        .HasForeignKey("UnitId");
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("EmployeeStatus");
+                });
+
+            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Organisation.EmployeeOTP", b =>
+                {
+                    b.HasOne("ERPApplication.DomainLayer.Models.Organisation.Employee", "Employee")
+                        .WithOne()
+                        .HasForeignKey("ERPApplication.DomainLayer.Models.Organisation.EmployeeOTP", "EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("ERPApplication.DomainLayer.Models.Organisation.Role", b =>
+                {
+                    b.HasOne("ERPApplication.DomainLayer.Models.Organisation.Employee", "Owner")
+                        .WithMany()
+                        .HasForeignKey("RoleOwner")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("ERPApplication.DomainLayer.Models.Organisation.Unit", b =>
                 {
                     b.HasOne("ERPApplication.DomainLayer.Models.Organisation.Department", null)
                         .WithMany()
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DepartmentId");
 
                     b.HasOne("ERPApplication.DomainLayer.Models.Organisation.Employee", null)
                         .WithMany()

@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace ERPApplication.InfrastructureLayer.Data.Configurations
 {
-    internal class EmployeeLeaveRequestConfiguration : IEntityTypeConfiguration<EmployeeLeaveRequest>
+    internal class LeaveRequestConfiguration : IEntityTypeConfiguration<LeaveRequest>
     {
-        public void Configure(EntityTypeBuilder<EmployeeLeaveRequest> builder)
+        public void Configure(EntityTypeBuilder<LeaveRequest> builder)
         {
             builder
                 .HasOne(e => e.LeaveStatus)

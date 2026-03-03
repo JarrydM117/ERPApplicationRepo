@@ -2,6 +2,8 @@
 using ERPApplication.ApplicationLayer.DTOs.AllocatedTicket;
 using ERPApplication.ApplicationLayer.DTOs.Ticket;
 using ERPApplication.ApplicationLayer.Services;
+using ERPApplication.DomainLayer.Models.Organisation;
+using ERPApplication.DomainLayer.Models.Tickets;
 using ERPApplication.PresentationLayer.HelperMethods;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -21,70 +23,41 @@ namespace ERPApplication.PresentationLayer.Controllers
             _ticketService = ticketService;
         }
 
-        [HttpGet("GetUnallocatedTickets/{statusId}/{unitId}")]
-        public async Task<IActionResult> GetUnallocatedTickets([FromRoute] int statusId,[FromRoute] int unitId)
-        {
-            var result = await _ticketService.GetUnallocatedTickets(statusId, unitId);
-            return ResultMapper.ReturnResult(result);
-        }
-
+        [HttpGet("GetUnallocatedTickets/{unitId}")]
+        public async Task<IActionResult> GetUnallocatedTickets([FromRoute] int unitId)
+        => ResultMapper.ReturnResult(await _ticketService.GetUnallocatedTickets(unitId));
+        
         [HttpPost("CreateTicket")]
-        public async Task<IActionResult> CreateTicket([FromBody] TicketDTO ticket)
-        {
-            var result = await _ticketService.CreateTicket(ticket);
-            return ResultMapper.ReturnResult(result);
-        }
-
+        public async Task<IActionResult> CreateTicket([FromBody] TicketCreationDTO ticket)
+        => ResultMapper.ReturnResult(await _ticketService.CreateTicket(ticket));
+        
         [HttpPut("AssignTicket")]
         public async Task<IActionResult> AssignTicket(TicketAssignmentDTO ticketAssignment)
-        {
-            var result = await _ticketService.AssignTicket(ticketAssignment);
-            return ResultMapper.ReturnResult(result);
-        }
-
+        => ResultMapper.ReturnResult(await _ticketService.AssignTicket(ticketAssignment));
+        
         [HttpPut("UpdateTicket")]
         public async Task<IActionResult> UpdateTicket([FromBody] TicketUpdateDTO ticket)
-        {
-            var result = await _ticketService.UpdateTicket(ticket);
-            return ResultMapper.ReturnResult(result);
-        }
+        => ResultMapper.ReturnResult(await _ticketService.UpdateTicket(ticket));
 
         [HttpGet("GetTicket/{id}")]
         public async Task<IActionResult> GetTicket([FromRoute] int id)
-        {
-            var result = await _ticketService.GetTicketWithId(id);
-            return ResultMapper.ReturnResult(result);
-
-        }
-
+         => ResultMapper.ReturnResult(await _ticketService.GetTicketWithId(id));
+        
         [HttpPut("CloseTicket")]
         public async Task<IActionResult> CloseTicket([FromBody] int id)
-        {
-            var result = await _ticketService.CloseTicket(id);
-            return ResultMapper.ReturnResult(result);
-        }
+        => ResultMapper.ReturnResult(await _ticketService.CloseTicket(id));
 
         [HttpPost("TransferTicket")]
         public async Task<IActionResult> TransferTicket([FromBody] TicketAssignmentDTO ticket)
-        {
-            var result = await _ticketService.TransferTicket(ticket);
-            return ResultMapper.ReturnResult(result);
-        }
+        => ResultMapper.ReturnResult(await _ticketService.TransferTicket(ticket));
 
         [HttpGet("GetAllSupportAgent/{employeeId}/{isOpen}/{position}")]
         public async Task<IActionResult> GetAll([FromRoute] int employeeId, [FromRoute] bool isOpen, [FromRoute] int position)
-        {
-            var result = await _ticketService.GetAll(employeeId, isOpen, position);
-            return ResultMapper.ReturnResult(result);
-        }
-
+         => ResultMapper.ReturnResult(await _ticketService.GetAll(employeeId, isOpen, position));
+        
         [HttpGet("GetAllEndUser/{employeeId}/{ticketStatusId}/{position}")]
         public async Task<IActionResult> GetAll([FromRoute] int employeeId, [FromRoute] int ticketStatusId, [FromRoute] int position)
-        {
-            var result = await _ticketService.GetAll(employeeId, ticketStatusId, position);
-            return ResultMapper.ReturnResult(result);
-        }
-
-       
+         =>  ResultMapper.ReturnResult(await _ticketService.GetAll(employeeId, ticketStatusId, position));
+        
     }
 }

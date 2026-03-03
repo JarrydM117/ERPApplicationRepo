@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace ERPApplication.ApplicationLayer.DTOs.Employee
 {
-    public record EmployeeRegistrationDTO(string FirstName, string LastName, string JobTitle, int? ReportingManagerId, int UnitId, int EmployeeStatusId);
+    public record EmployeeRegistrationDTO(string FirstName, string LastName, string JobTitle, int? ReportingManagerId, int UnitId);
 }

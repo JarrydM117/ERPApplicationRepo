@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 
 namespace ERPApplication.ApplicationLayer.DTOs.Ticket
 {
-    public record TicketAllocatedPresentationDTO(int Id, string Title, int TicketStatusId, DateTime DateIssued, AllocatedTicketPresentationDTO AllocatedTicketPresentation );
+    public record TicketAllocatedPresentationDTO(int Id, string Title, int TicketStatusId, DateTime DateIssued, AllocatedTicketPresentationDTO? AllocatedTicketPresentation );
 }

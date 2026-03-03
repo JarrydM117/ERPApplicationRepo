@@ -22,9 +22,9 @@ namespace ERPApplication.ApplicationLayer.Services
             _ticketMapper = ticketMapper;
         }
         //Used to create a ticket.
-        public async Task<Result> CreateTicket(TicketDTO ticketDto)
+        public async Task<Result> CreateTicket(TicketCreationDTO ticketDto)
         {
-            Ticket ticket = _ticketMapper.TicketDtoToTicket(ticketDto);
+            Ticket ticket = _ticketMapper.CreationToTicket(ticketDto);
             ticket.CreateNewTicket();
             return await _ticketRepository.Create(ticket) ? Result.Success() : Result.Unsuccessful(ErrorType.FailedInsertion, "Could Not Create Ticket.") ; 
         }
@@ -35,7 +35,8 @@ namespace ERPApplication.ApplicationLayer.Services
             var ticket = await GetTicket(ticketAssignment.TicketId);
             if (ticket == null)
                 return NotFoundResult();
-            ticket.AssignTicket(ticketAssignment.EmployeeId);
+            if (!ticket.AssignTicket(ticketAssignment.EmployeeId))
+                return Result.Unsuccessful(ErrorType.InvalidOperation, "Cannot assign a ticket if it has already been allocated.");
             return await UpdateTicket(ticket, 2) ? Result.Success() : Result.Unsuccessful(ErrorType.FailedUpdate, "Could Not Assign Ticket.");  
         }
 
@@ -80,9 +81,9 @@ namespace ERPApplication.ApplicationLayer.Services
             return tickets != null ? Result<List<TicketAllocatedPresentationDTO>>.Success(_ticketMapper.TicketToAllocatedPresenation(tickets)) :  Result<List<TicketAllocatedPresentationDTO>>.Unsuccessful(ErrorType.NotFound, "Could not retrieve tickets");
         }
         //Return all tickets that have not been allocated as of yet.
-        public async Task<Result<List<TicketPresentationDTO>>> GetUnallocatedTickets(int statusId, int unitId)
+        public async Task<Result<List<TicketPresentationDTO>>> GetUnallocatedTickets(int unitId)
         {
-            var tickets = await _ticketRepository.GetUnallocatedTickets(statusId, unitId);
+            var tickets = await _ticketRepository.GetUnallocatedTickets(unitId);
             return tickets != null ? Result<List<TicketPresentationDTO>>.Success(_ticketMapper.TicketToTicketPresentation(tickets)) : Result<List<TicketPresentationDTO>>.Unsuccessful(ErrorType.InvalidOperation, "Could not retrieve tickets");
         }
 
@@ -99,7 +100,7 @@ namespace ERPApplication.ApplicationLayer.Services
             return await _ticketRepository.UpdateTicket(ticket) == expectedUpdates;
         }
 
-        private async Task<Ticket> GetTicket(int id)
+        private async Task<Ticket?> GetTicket(int id)
         {
             var ticket = await _ticketRepository.Get(id);
             return ticket;

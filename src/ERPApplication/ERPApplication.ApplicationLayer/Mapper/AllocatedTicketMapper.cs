@@ -11,9 +11,9 @@ namespace ERPApplication.ApplicationLayer.Mapper
 {
     public class AllocatedTicketMapper
     {
-        public AllocatedTicketPresentationDTO AllocatedToPresentationDTO(AllocatedTicket allocatedTicket)
+        public AllocatedTicketPresentationDTO? AllocatedToPresentationDTO(AllocatedTicket? allocatedTicket)
         {
-            return new AllocatedTicketPresentationDTO(allocatedTicket.Id, allocatedTicket.DateAllocated);
+            return allocatedTicket != null ? new AllocatedTicketPresentationDTO(allocatedTicket.Id, allocatedTicket.DateAllocated):null;
         }
 
         public AllocatedTicketDTO AllocatedToAllocatedDTO(AllocatedTicket allocatedTicket)

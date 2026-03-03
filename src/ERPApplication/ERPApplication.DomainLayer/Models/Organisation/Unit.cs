@@ -1,4 +1,5 @@
-﻿using ERPApplication.DomainLayer.Models.Tickets;
+﻿using ERPApplication.DomainLayer.Models.Common;
+using ERPApplication.DomainLayer.Models.Tickets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,10 @@ namespace ERPApplication.DomainLayer.Models.Organisation
     public class Unit :BaseEntity
     {
         public string UnitName { get; private  set; }
-        public int UnitHead {  get; private set; }
-        public int DepartmentId { get; private set; }
+        public int? UnitHead {  get; private set; }
+        public int? DepartmentId { get; private set; }
         public List<TicketSupportType> TicketSupportTypes { get;  set; }
-        public Unit(int id, string unitName, int unitHead, int departmentId): base(id)
+        public Unit(int id, string unitName, int? unitHead, int? departmentId): base(id)
         {
             UnitName = unitName;
             UnitHead = unitHead;

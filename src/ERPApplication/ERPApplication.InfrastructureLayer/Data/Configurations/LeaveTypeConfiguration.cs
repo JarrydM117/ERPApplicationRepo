@@ -14,13 +14,9 @@ namespace ERPApplication.InfrastructureLayer.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<LeaveType> builder)
         {
-            builder.HasMany<EmployeeLeaveRequest>()
+            builder.HasMany<LeaveRequest>()
                 .WithOne()
                 .HasForeignKey(e=>e.LeaveTypeId)
-                .IsRequired();
-            builder.HasMany<EmployeeLeave>()
-                .WithOne()
-                .HasForeignKey(e=> e.LeaveTypeId)
                 .IsRequired();
         }
     }
