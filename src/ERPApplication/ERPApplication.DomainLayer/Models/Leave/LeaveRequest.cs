@@ -29,8 +29,20 @@ namespace ERPApplication.DomainLayer.Models.Leave
             DateProcessed = dateProcessed;
         }
 
-      
+        public LeaveRequest(int employeeId, DateTime startDate, DateTime endDate, int leaveTypeId):base(0)
+        {
+            EmployeeId = employeeId;
+            StartDate = startDate;
+            EndDate = endDate;
+            LeaveTypeId = leaveTypeId;
+        }
 
+        public void CreateLeaveRequest()
+        {
+            LeaveStatusId = 1;
+            DateApplied = DateTime.Now;
+            DateProcessed = null;
+        }
 
         public void EditLeaveStatus(int leaveStatusId)
         {

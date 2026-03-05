@@ -12,7 +12,7 @@ namespace ERPApplication.DomainLayer.Models.Leave
     //Due to the different behaviour  and attributes of the different leave types.
     public abstract class Leave :BaseEntity, ILeave
     {
-        public int LeaveTypeId { get; protected set; }
+        public virtual int LeaveTypeId { get; protected set; }
         public int TotalAmountOfLeavePerCycle { get; protected set; }
         public int EmployeeId { get; protected set; }
         public double LeaveAmmount {  get;protected set; }
@@ -26,6 +26,11 @@ namespace ERPApplication.DomainLayer.Models.Leave
             LeaveCycleStart = leaveCycleStart;
             Cycle = cycle;
             TotalAmountOfLeavePerCycle = totalAmountOfLeavePerCycle;
+            LeaveTypeId = leaveTypeId;
+        }
+        public Leave(int employeeId, int leaveTypeId): base(0)
+        {
+            EmployeeId = employeeId;
             LeaveTypeId = leaveTypeId;
         }
      
@@ -53,6 +58,13 @@ namespace ERPApplication.DomainLayer.Models.Leave
             return true;
         }
 
+        public virtual void AddLeaveBack(int ammount)
+        {
+            LeaveAmmount += ammount;
+        }
+
+
+
     }
 
 
@@ -63,6 +75,9 @@ namespace ERPApplication.DomainLayer.Models.Leave
         public AnnualLeave(int id,  int employeeId, double leaveAmmount, DateTime leaveCycleStart, int cycle, int totalAmountOfLeavePerCycle, int leaveTypeId, double leaveCarriedOver) : base(id,  employeeId, leaveAmmount, leaveCycleStart, cycle, totalAmountOfLeavePerCycle, leaveTypeId)
         {
             LeaveCarriedOver = leaveCarriedOver;
+        }
+        public AnnualLeave(int employeeId) : base(0,2)
+        {
         }
 
         public override void SubtractLeave(double amountTaken)
@@ -100,20 +115,45 @@ namespace ERPApplication.DomainLayer.Models.Leave
 
     public class SickLeave : Leave
     {
-        public SickLeave(int id,  int employeeId, double leaveAmmount, DateTime leaveCycleStart, int cycle, int totalAmountOfLeavePerCycle,int leaveTypeId = 1) : base(id, employeeId, leaveAmmount, leaveCycleStart, cycle, totalAmountOfLeavePerCycle, leaveTypeId)
+        public SickLeave(int id,  int employeeId, double leaveAmmount, DateTime leaveCycleStart, int cycle, int totalAmountOfLeavePerCycle) : base(id, employeeId, leaveAmmount, leaveCycleStart, cycle, totalAmountOfLeavePerCycle, 1)
+        {
+        }
+        public SickLeave(int employeeId) : base(0,1)
         {
         }
     }
     public class FamilyResponsibilityLeave : Leave
     {
-        public FamilyResponsibilityLeave(int id, int employeeId, double leaveAmmount, DateTime leaveCycleStart, int cycle, int totalAmountOfLeavePerCycle, int leaveTypeId=3) : base(id, employeeId, leaveAmmount, leaveCycleStart, cycle, totalAmountOfLeavePerCycle, leaveTypeId)
+        public FamilyResponsibilityLeave(int id, int employeeId, double leaveAmmount, DateTime leaveCycleStart, int cycle, int totalAmountOfLeavePerCycle) : base(id, employeeId, leaveAmmount, leaveCycleStart, cycle, totalAmountOfLeavePerCycle, 3)
+        {
+        }
+        public FamilyResponsibilityLeave(int employeeId) : base(0,3)
         {
         }
     }
     public class UnpaidLeave : Leave
     {
-        public UnpaidLeave(int id, int employeeId, double leaveAmmount, DateTime leaveCycleStart, int cycle, int totalAmountOfLeavePerCycle, int leaveTypeId=4) : base(id, employeeId, leaveAmmount, leaveCycleStart, cycle, totalAmountOfLeavePerCycle, leaveTypeId)
+        public UnpaidLeave(int id, int employeeId) : base(id, employeeId, 0 , DateTime.MinValue, 0, 0, 4)
         {
+
+        }
+
+        public UnpaidLeave(int employeeId) : base(0,4)
+        {
+            LeaveTypeId = 4;
+            LeaveAmmount = 0;
+        }
+        public override bool ValidateLeave(double amountTaken)
+        {
+            return true;
+        }
+        public override bool StartNewCycle(bool authorisedOverride, int? totalAmountPerCycle)
+        {
+            return true;
+        }
+        public override void SubtractLeave(double amountTaken)
+        {
+            return;
         }
     }
 }

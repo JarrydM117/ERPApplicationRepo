@@ -21,7 +21,7 @@ namespace ERPApplication.InfrastructureLayer.Repository
         public async Task<List<Ticket>> GetUnallocatedTickets(int unitId)
         {
             var tickets = await _context
-                                    .Set<Ticket>()
+                                    .Tickets
                                     .Where(t => t.TicketStatusId == 1)
                                     .Include(e=>e.Employee)
                                     .Include(s => s.SupportType)
@@ -44,7 +44,7 @@ namespace ERPApplication.InfrastructureLayer.Repository
         public async Task<bool> Create(Ticket ticket)
         {
             await _context
-                        .Set<Ticket>()
+                        .Tickets
                         .AddAsync(ticket);
             return await _context.SaveChangesAsync() == 1;
         }
@@ -62,9 +62,9 @@ namespace ERPApplication.InfrastructureLayer.Repository
         public async Task<List<Ticket>> GetAll(int employeeId, int ticketStatusId, int position)
         {
             return await _context
-                                .Set<Ticket>()
+                                .Tickets
+                                .Where(t => t.TicketStatusId == ticketStatusId && t.EmployeeId == employeeId)
                                 .Include(t => t.AllocatedTickets)
-                                .Where(t=>t.TicketStatusId == ticketStatusId  && t.EmployeeId == employeeId)
                                 .OrderBy(t => t.DateIssued)
                                 .Skip(position)
                                 .Take(10)

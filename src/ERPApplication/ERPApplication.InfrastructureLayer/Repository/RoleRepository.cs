@@ -21,7 +21,7 @@ namespace ERPApplication.InfrastructureLayer.Repository
         public async Task<List<Role>> GetRolesWithId(List<int> roleIds)
         {
 
-            var roles = await _context.Set<Role>().Where(e=>roleIds.Contains(e.Id)).ToListAsync();
+            var roles = await _context.Roles.Where(e=>roleIds.Contains(e.Id)).ToListAsync();
             return roles;
         }
 
@@ -33,7 +33,7 @@ namespace ERPApplication.InfrastructureLayer.Repository
         public async Task<bool> CreateNewRoles(List<Role> roles)
         {
             await _context
-                        .Set<Role>()
+                        .Roles
                         .AddRangeAsync(roles);
             var validate = await _context.SaveChangesAsync();
             return validate == 1;

@@ -66,7 +66,9 @@ namespace ERPApplication.InfrastructureLayer.Repository
         }
         public async Task<int> UpdateEmployee(Employee employee)
         {
-            _context.Employees.Update(employee);
+            _context
+                .Employees
+                .Update(employee);
             return await _context.SaveChangesAsync();
 
         }

@@ -10,7 +10,6 @@ namespace ERPApplication.DomainLayer.Models.Leave
     {
          void SubtractLeave(double amountTaken);
          bool ValidateLeave(double amountTaken);
-
          void AddMonthlyLeave();
          bool StartNewCycle(bool authorisedOverride, int? totalAmountPerCycle);
     }

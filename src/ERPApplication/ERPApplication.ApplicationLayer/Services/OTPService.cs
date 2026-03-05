@@ -35,31 +35,16 @@ namespace ERPApplication.ApplicationLayer.Services
 
         public async Task<Result> OTPCreateOrUpdateTransaction(OTPCreationDTO otpCreation)
         {
-            var otp = new EmployeeOTP(0, otpCreation.EmployeeId);
-            string tempOtp = string.Empty;
-            bool flag = false;
-            if (await OTPExists(otp.EmployeeId))
-            {
-                otp = await Get(otp.EmployeeId);
-                otp.CreateOTP();
-                tempOtp = otp.OTP;
-                otp.HashOTP();
-                flag = await UpdateOTP(otp);
-            }
-            else
-            {
-                otp.CreateOTP();
-                tempOtp = otp.OTP;
-                otp.HashOTP();
-                flag = await CreateOTP(otp);
-                otp = await Get(otp.EmployeeId);
-            }
+            bool flag = await OTPExists(otpCreation.EmployeeId);
+            var otp = flag ? await Get(otpCreation.EmployeeId) : new EmployeeOTP(0, otpCreation.EmployeeId); ;
+            otp.CreateOTP();
+            string tempOtp = otp.OTP;
+            otp.HashOTP();
+            flag = flag ? await UpdateOTP(otp) : await CreateOTP(otp);
             if (!flag)
                 return Result.Unsuccessful(ErrorType.FailedInsertion, "Could not Insert new OTP, Please try Again.");
             return await SendEmail(otp, tempOtp);
         }
-
-
     
         private async Task<Result> SendEmail(EmployeeOTP otp, string _otp)
         {
@@ -79,26 +64,17 @@ namespace ERPApplication.ApplicationLayer.Services
             return otp.ValidateOTP(tempOTP) ? Result.Success() : Result.Unsuccessful(ErrorType.InvalidData, "Invalid OTP.");
         }
 
-        private async Task<bool> OTPExists(int employeeId)
-        {
-            return await _otpRepository.Exists(employeeId);
-        }
+        private async Task<bool> OTPExists(int employeeId) => await _otpRepository.Exists(employeeId);
+        
 
-        private async Task<bool> CreateOTP(EmployeeOTP otp)
-        {
-            return (await _otpRepository.Create(otp)) == 1;
-        }
+        private async Task<bool> CreateOTP(EmployeeOTP otp) => (await _otpRepository.Create(otp)) == 1;
+        
 
-        private async Task<bool> UpdateOTP(EmployeeOTP otp)
-        {
+        private async Task<bool> UpdateOTP(EmployeeOTP otp) => (await _otpRepository.Update(otp)) == 1;
+        
 
-            return (await _otpRepository.Update(otp)) == 1;
-        }
-
-        private async Task<EmployeeOTP> Get(int employeeId)
-        {
-            return (await _otpRepository.Get(employeeId));
-        }
+        private async Task<EmployeeOTP> Get(int employeeId) => (await _otpRepository.Get(employeeId));
+        
         
 
     }
