@@ -2,7 +2,7 @@ An ERP application that is meant to handle business-related tasks. The project i
 
 ## Update 2026-10-04:
 
-The project hasn't been touched in months. I am looking to get back to the project ASAP. I do understand where there are flaws in the project, in terms of coupling between classes. I will come back and fix the solution. I have added **A LOT** of tools to my arsenal since quietly abandoning this side project. Things I would remove:
-- Magic Numbers (Ewwwww).
-- Put my interfaces in the domain layer.
+The project hasn't been touched in months. I am looking to get back to the project ASAP. I do understand where there are flaws in the project, in terms of coupling between classes. I will come back and fix the solution. I have added **A LOT** of tools to my arsenal since quietly abandoning this side project. Things I would change:
+- Magic Numbers (Ewwwww) and exhange them for enums 😁.
+- Place my interfaces in the domain layer.
 - Probably a lot more too, need to have a solid look at the project.
